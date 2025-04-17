@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BMI & Macros Calculator</title>
+  <!-- Google AdSense Script -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5861761450435900" crossorigin="anonymous"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -81,6 +83,17 @@
   <header>
     <h1 id="main-title">حاسبة مؤشر الجسم والماكروز</h1>
   </header>
+
+  <!-- AdSense Ad Unit -->
+  <ins class="adsbygoogle"
+       style="display:block; text-align:center; margin:1rem auto;"
+       data-ad-client="ca-pub-5861761450435900"
+       data-ad-slot="YOUR_AD_SLOT_ID"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
   <div class="container">
     <div class="lang-switch">
@@ -175,7 +188,6 @@
         ? ["التنشيف", "زيادة الكتلة", "الثبات"]
         : ["Cutting", "Bulking", "Maintain"];
 
-      // update labels dynamically
       const selects = ["activity", "gender", "goal"];
       const labelsArr = [activityLabels, genderLabels, goalLabels];
       selects.forEach((id, idx) => {
@@ -215,12 +227,11 @@
         document.getElementById(item.id).innerText = isAr ? item.ar : item.en;
       });
 
-      // update options text
       ['activity', 'gender', 'goal'].forEach((id, idx) => {
         const labels = id === 'activity'
           ? (isAr
             ? ["قليل الحركة", "نشاط خفيف", "نشاط متوسط", "نشاط عالي", "نشاط عالي جداً"]
-            : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"])
+            : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"] )
           : id === 'gender'
             ? (isAr
               ? ["ذكر", "أنثى"]
