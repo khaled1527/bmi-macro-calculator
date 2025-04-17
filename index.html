@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BMI & Macros Calculator</title>
-  <!-- Google AdSense Script -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5861761450435900" crossorigin="anonymous"></script>
   <style>
     body {
@@ -30,8 +29,13 @@
     }
     .lang-switch {
       display: flex;
-      justify-content: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
       margin-bottom: 1rem;
+    }
+    .lang-switch label {
+      margin-bottom: 0.3rem;
+      font-weight: bold;
     }
     .lang-switch select {
       padding: 0.5rem;
@@ -84,7 +88,6 @@
     <h1 id="main-title">حاسبة مؤشر الجسم والماكروز</h1>
   </header>
 
-  <!-- AdSense Ad Unit -->
   <ins class="adsbygoogle"
        style="display:block; text-align:center; margin:1rem auto;"
        data-ad-client="ca-pub-5861761450435900"
@@ -97,6 +100,7 @@
 
   <div class="container">
     <div class="lang-switch">
+      <label id="lang-label">اختر اللغة:</label>
       <select id="lang-select" onchange="setLanguage(this.value)">
         <option value="ar" selected>العربية</option>
         <option value="en">English</option>
@@ -146,6 +150,13 @@
   <script>
     let currentLang = 'ar';
 
+    function bmiCategory(bmi) {
+      if (bmi < 18.5) return currentLang === 'ar' ? 'نحيف' : 'Underweight';
+      if (bmi < 25) return currentLang === 'ar' ? 'طبيعي' : 'Normal';
+      if (bmi < 30) return currentLang === 'ar' ? 'زيادة وزن' : 'Overweight';
+      return currentLang === 'ar' ? 'سمنة' : 'Obese';
+    }
+
     function calculateAll() {
       const weight = parseFloat(document.getElementById("weight").value);
       const height = parseFloat(document.getElementById("height").value) / 100;
@@ -162,6 +173,7 @@
       }
 
       const bmi = weight / (height * height);
+      const category = bmiCategory(bmi);
 
       let bmr;
       if (gender === "male") {
@@ -178,27 +190,8 @@
       const fat = weight * 0.9;
       const carbs = (tdee - (protein * 4 + fat * 9)) / 4;
 
-      const activityLabels = currentLang === 'ar'
-        ? ["قليل الحركة", "نشاط خفيف", "نشاط متوسط", "نشاط عالي", "نشاط عالي جداً"]
-        : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"];
-      const genderLabels = currentLang === 'ar'
-        ? ["ذكر", "أنثى"]
-        : ["Male", "Female"];
-      const goalLabels = currentLang === 'ar'
-        ? ["التنشيف", "زيادة الكتلة", "الثبات"]
-        : ["Cutting", "Bulking", "Maintain"];
-
-      const selects = ["activity", "gender", "goal"];
-      const labelsArr = [activityLabels, genderLabels, goalLabels];
-      selects.forEach((id, idx) => {
-        const opts = document.getElementById(id).options;
-        for (let i = 0; i < opts.length; i++) {
-          opts[i].text = labelsArr[idx][i];
-        }
-      });
-
       const resultText =
-        `${currentLang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'BMI'}: ${bmi.toFixed(2)}\n` +
+        `${currentLang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'BMI'}: ${bmi.toFixed(2)} (${category})\n` +
         `${currentLang === 'ar' ? 'السعرات الحرارية اليومية' : 'Daily Calories'}: ${Math.round(tdee)}\n` +
         `${currentLang === 'ar' ? 'البروتين' : 'Protein'}: ${Math.round(protein)}g\n` +
         `${currentLang === 'ar' ? 'الكربوهيدرات' : 'Carbs'}: ${Math.round(carbs)}g\n` +
@@ -213,8 +206,8 @@
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
       const isAr = lang === 'ar';
-      document.getElementById("main-title").innerText =
-        isAr ? "حاسبة مؤشر الجسم والماكروز" : "BMI & Macros Calculator";
+      document.getElementById("lang-label").innerText = isAr ? "اختر اللغة:" : "Choose Language:";
+      document.getElementById("main-title").innerText = isAr ? "حاسبة مؤشر الجسم والماكروز" : "BMI & Macros Calculator";
       document.getElementById("calculate-btn").innerText = isAr ? "احسب" : "Calculate";
       [
         {id: 'weight-label', ar: 'الوزن (كجم)', en: 'Weight (kg)'},
@@ -227,18 +220,14 @@
         document.getElementById(item.id).innerText = isAr ? item.ar : item.en;
       });
 
-      ['activity', 'gender', 'goal'].forEach((id, idx) => {
+      ['activity', 'gender', 'goal'].forEach(id => {
         const labels = id === 'activity'
           ? (isAr
             ? ["قليل الحركة", "نشاط خفيف", "نشاط متوسط", "نشاط عالي", "نشاط عالي جداً"]
-            : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"] )
+            : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"])
           : id === 'gender'
-            ? (isAr
-              ? ["ذكر", "أنثى"]
-              : ["Male", "Female"])
-            : (isAr
-              ? ["التنشيف", "زيادة الكتلة", "الثبات"]
-              : ["Cutting", "Bulking", "Maintain"]);
+            ? (isAr ? ["ذكر", "أنثى"] : ["Male", "Female"])
+            : (isAr ? ["التنشيف", "زيادة الكتلة", "الثبات"] : ["Cutting", "Bulking", "Maintain"]);
         const opts = document.getElementById(id).options;
         for (let i = 0; i < opts.length; i++) opts[i].text = labels[i];
       });
