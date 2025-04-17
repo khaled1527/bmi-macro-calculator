@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMI & Macros Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .lang-switch {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 1rem;
+    }
+    .lang-switch select {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #ecf0f1;
+      border-radius: 8px;
+      white-space: pre-line;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="main-title">حاسبة مؤشر الجسم والماكروز</h1>
+  </header>
+
+  <div class="container">
+    <div class="lang-switch">
+      <select id="lang-select" onchange="setLanguage(this.value)">
+        <option value="ar" selected>العربية</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <div>
+      <label id="weight-label">الوزن (كجم)</label>
+      <input type="number" id="weight" />
+
+      <label id="height-label">الطول (سم)</label>
+      <input type="number" id="height" />
+
+      <label id="age-label">العمر</label>
+      <input type="number" id="age" />
+
+      <label id="gender-label">الجنس</label>
+      <select id="gender">
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
+
+      <label id="activity-label">مستوى النشاط</label>
+      <select id="activity">
+        <option value="1.2">قليل الحركة</option>
+        <option value="1.375">نشاط خفيف</option>
+        <option value="1.55">نشاط متوسط</option>
+        <option value="1.725">نشاط عالي</option>
+        <option value="1.9">نشاط عالي جداً</option>
+      </select>
+
+      <label id="goal-label">الهدف</label>
+      <select id="goal">
+        <option value="cutting">التنشيف</option>
+        <option value="bulking">زيادة الكتلة</option>
+        <option value="maintain">الثبات</option>
+      </select>
+
+      <button onclick="calculateAll()" id="calculate-btn">احسب</button>
+
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+
+  <div class="footer">Developed by Khaled</div>
+
+  <script>
+    let currentLang = 'ar';
+
+    function calculateAll() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value) / 100;
+      const age = parseInt(document.getElementById("age").value);
+      const gender = document.getElementById("gender").value;
+      const activity = parseFloat(document.getElementById("activity").value);
+      const goal = document.getElementById("goal").value;
+
+      if (isNaN(weight) || isNaN(height) || isNaN(activity) || isNaN(age)) {
+        document.getElementById("result").innerText = currentLang === 'ar'
+          ? "الرجاء إدخال البيانات بشكل صحيح."
+          : "Please enter valid inputs.";
+        return;
+      }
+
+      const bmi = weight / (height * height);
+
+      let bmr;
+      if (gender === "male") {
+        bmr = 10 * weight + 6.25 * (height * 100) - 5 * age + 5;
+      } else {
+        bmr = 10 * weight + 6.25 * (height * 100) - 5 * age - 161;
+      }
+
+      let tdee = bmr * activity;
+      if (goal === "cutting") tdee -= 500;
+      else if (goal === "bulking") tdee += 300;
+
+      const protein = weight * 2.2;
+      const fat = weight * 0.9;
+      const carbs = (tdee - (protein * 4 + fat * 9)) / 4;
+
+      const activityLabels = currentLang === 'ar'
+        ? ["قليل الحركة", "نشاط خفيف", "نشاط متوسط", "نشاط عالي", "نشاط عالي جداً"]
+        : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"];
+      const genderLabels = currentLang === 'ar'
+        ? ["ذكر", "أنثى"]
+        : ["Male", "Female"];
+      const goalLabels = currentLang === 'ar'
+        ? ["التنشيف", "زيادة الكتلة", "الثبات"]
+        : ["Cutting", "Bulking", "Maintain"];
+
+      // update labels dynamically
+      const selects = ["activity", "gender", "goal"];
+      const labelsArr = [activityLabels, genderLabels, goalLabels];
+      selects.forEach((id, idx) => {
+        const opts = document.getElementById(id).options;
+        for (let i = 0; i < opts.length; i++) {
+          opts[i].text = labelsArr[idx][i];
+        }
+      });
+
+      const resultText =
+        `${currentLang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'BMI'}: ${bmi.toFixed(2)}\n` +
+        `${currentLang === 'ar' ? 'السعرات الحرارية اليومية' : 'Daily Calories'}: ${Math.round(tdee)}\n` +
+        `${currentLang === 'ar' ? 'البروتين' : 'Protein'}: ${Math.round(protein)}g\n` +
+        `${currentLang === 'ar' ? 'الكربوهيدرات' : 'Carbs'}: ${Math.round(carbs)}g\n` +
+        `${currentLang === 'ar' ? 'الدهون' : 'Fat'}: ${Math.round(fat)}g`;
+
+      document.getElementById("result").innerText = resultText;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+      const isAr = lang === 'ar';
+      document.getElementById("main-title").innerText =
+        isAr ? "حاسبة مؤشر الجسم والماكروز" : "BMI & Macros Calculator";
+      document.getElementById("calculate-btn").innerText = isAr ? "احسب" : "Calculate";
+      [
+        {id: 'weight-label', ar: 'الوزن (كجم)', en: 'Weight (kg)'},
+        {id: 'height-label', ar: 'الطول (سم)', en: 'Height (cm)'},
+        {id: 'age-label', ar: 'العمر', en: 'Age'},
+        {id: 'gender-label', ar: 'الجنس', en: 'Gender'},
+        {id: 'activity-label', ar: 'مستوى النشاط', en: 'Activity Level'},
+        {id: 'goal-label', ar: 'الهدف', en: 'Goal'}
+      ].forEach(item => {
+        document.getElementById(item.id).innerText = isAr ? item.ar : item.en;
+      });
+
+      // update options text
+      ['activity', 'gender', 'goal'].forEach((id, idx) => {
+        const labels = id === 'activity'
+          ? (isAr
+            ? ["قليل الحركة", "نشاط خفيف", "نشاط متوسط", "نشاط عالي", "نشاط عالي جداً"]
+            : ["Sedentary", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"])
+          : id === 'gender'
+            ? (isAr
+              ? ["ذكر", "أنثى"]
+              : ["Male", "Female"])
+            : (isAr
+              ? ["التنشيف", "زيادة الكتلة", "الثبات"]
+              : ["Cutting", "Bulking", "Maintain"]);
+        const opts = document.getElementById(id).options;
+        for (let i = 0; i < opts.length; i++) opts[i].text = labels[i];
+      });
+    }
+
+    window.onload = () => setLanguage('ar');
+  </script>
+</body>
+</html>
